@@ -115,6 +115,7 @@ async function saveToS3Promise(
     Bucket: dwDestBucket,
     Key: `${dwOutputBucketPathPrefix}/${destKey}`,
     Body: Buffer.from(JSON.stringify(dynamodb)),
+    ACL: "bucket-owner-full-control",
   };
 
   console.log("Uploading to S3...", params);
