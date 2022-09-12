@@ -1,0 +1,83 @@
+app: tc-lambda-profiledata
+service: tc-lambda-profiledata
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs16.x
+  stage: ${opt:stage, 'prod'}
+  vpc:
+    securityGroupIds:
+      - sg-810253e4
+    subnetIds:
+      - subnet-38647110
+      - subnet-70657058
+  tracing:
+    lambda: false
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "dynamodb:scan"
+            - "dynamodb:describeTable"
+          Resource:
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberAggregatedSkills"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberEnteredSkills"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfileTrait"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfile"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStats"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStatsHistory"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/Tags"
+        # Allow functions to write objects in a bucket in a different account
+        - Effect: Allow
+          Action:
+            - "s3:PutObject"
+          Resource:
+            - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}/*"
+        # Allow putting metrics to CloudWatch
+        - Effect: Allow
+          Action:
+            - "cloudwatch:PutMetricData"
+          Resource:
+            - "*"
+
+functions:
+  fix-format:
+    handler: handler.processAndSave
+    architecture: arm64
+    memorySize: 128
+    timeout: 30
+    environment:
+      DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
+      DW_OUTPUT_BUCKET_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}
+    events:
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberAggregatedSkills/stream/2016-04-19T04:21:10.579"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberEnteredSkills/stream/2018-10-11T05:07:18.168"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfileTrait/stream/2018-10-16T14:29:15.370"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfile/stream/2016-04-19T04:20:58.068"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStats/stream/2016-04-19T04:21:16.943"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStatsHistory/stream/2018-10-13T05:44:07.762"
+          batchSize: 10
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Tags/stream/2016-04-19T04:21:26.424"
+          batchSize: 10

@@ -1,0 +1,6 @@
+node_modules
+.serverless
+scripts
+scripts/*
+temp/*
+temp
