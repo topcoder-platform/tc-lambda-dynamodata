@@ -44,7 +44,7 @@ provider:
             - "*"
 
 functions:
-  fix-format:
+  stream-to-dw:
     handler: handler.processAndSave
     architecture: arm64
     memorySize: 128
