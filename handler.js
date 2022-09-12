@@ -107,9 +107,9 @@ async function saveToS3Promise(
   dwOutputBucketPathPrefix
 ) {
   tableName = snakeCase(tableName);
-  const destKey = `${tableName}/${getPartitionKey()}/${getPrimaryKey(
-    tableName
-  )}.json`;
+  const destKey = `${tableName}/${getPartitionKey()}/${
+    dynamodb[getPrimaryKey(tableName)]
+  }.json`;
 
   const params = {
     Bucket: dwDestBucket,
