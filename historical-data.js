@@ -16,7 +16,7 @@ const dwOutputBucketPathPrefix =
 exports.fetchAll = async function main(event, context) {
   const TableName = event.tableName;
 
-  let params = { TableName: TableName, Limit: 200 };
+  let params = { TableName: TableName, Limit: 2000 };
   let items;
   let totalCount = 0;
 
