@@ -44,6 +44,11 @@ provider:
             - "*"
 
 functions:
+  historical-data:
+    handler: historical-data.fetchAll
+    architecture: arm64
+    memorySize: 2048
+    timeout: 900
   stream-to-dw:
     handler: handler.processAndSave
     architecture: arm64
