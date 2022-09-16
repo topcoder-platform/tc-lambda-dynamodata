@@ -1,16 +1,16 @@
 {
-    "name": "tc-lambda-profiledata",
-    "description": "Process and store member-data  queried in Redshift",
-    "version": "1.0.0",
-    "author": "Rakib Ansary <rakibansary@gmail.com>",
-    "license": "none",
-    "dependencies": {
-        "@aws-sdk/client-cloudwatch": "^3.165.0",
-        "@aws-sdk/client-s3": "^3.165.0",
-        "bluebird": "^3.7.2",
-        "change-case": "^4.1.2"
-    },
-    "volta": {
-        "node": "16.17.0"
-    }
+  "name": "tc-lambda-profiledata",
+  "description": "Process and store member-data  queried in Redshift",
+  "version": "1.0.0",
+  "author": "Rakib Ansary <rakibansary@gmail.com>",
+  "license": "none",
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.165.0",
+    "@aws-sdk/client-s3": "^3.165.0",
+    "bluebird": "^3.7.2",
+    "change-case": "^4.1.2"
+  },
+  "volta": {
+    "node": "16.17.0"
+  }
 }

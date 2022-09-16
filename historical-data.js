@@ -2,7 +2,7 @@ const { snakeCase } = require("change-case");
 const { DynamoDB } = require("aws-sdk");
 const { saveToS3Promise } = require("./handler");
 
-const Promise = require("blubebird");
+const Promise = require("bluebird");
 
 const docClient = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
