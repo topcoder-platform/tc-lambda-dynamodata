@@ -21,11 +21,10 @@ exports.processAndSave = function main(event, context) {
   console.log("Event", JSON.stringify(event));
 
   const tasks = [];
-  const tableName = eventSourceARN.split("/")[1];
 
   const data = event.Records.map(({ dynamodb, eventSourceARN }) => ({
     dynamodb: DynamoDB.Converter.unmarshall(dynamodb.NewImage),
-    tableName,
+    tableName: eventSourceARN.split("/")[1],
   }));
 
   for (const record of data) {
@@ -37,6 +36,7 @@ exports.processAndSave = function main(event, context) {
   Promise.all(tasks).then(async (results) => {
     const successCount = results.filter((result) => result).length;
     const failureCount = results.filter((result) => !result).length;
+    const tableName = data[0].tableName;
 
     if (successCount) {
       const query = getCWQuery("Success", tableName, successCount);
