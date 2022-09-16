@@ -32,8 +32,8 @@ exports.fetchAll = async function main(event, context) {
         dwOutputBucket,
         dwOutputBucketPathPrefix
       );
-      console.log("result", result);
       totalCount++;
+      console.log("Record number", totalCount, " result -> ", result);
     }
   } while (typeof items.LastEvaluatedKey != "undefined");
 
