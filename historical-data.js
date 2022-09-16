@@ -2,6 +2,8 @@ const { snakeCase } = require("change-case");
 const { DynamoDB } = require("aws-sdk");
 const { saveToS3Promise } = require("./handler");
 
+const Promise = require("blubebird");
+
 const docClient = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   sslEnabled: false,
@@ -30,22 +32,23 @@ exports.fetchAll = async function main(event, context) {
     items = await docClient.scan(params).promise();
     params.ExclusiveStartKey = items.LastEvaluatedKey;
 
-    for (const item of items.Items) {
-      const result = await saveToS3Promise(
-        { dynamodb: item, tableName },
-        dwOutputBucket,
-        dwOutputBucketPathPrefix
-      );
-      totalCount++;
-      console.log(
-        "Record number",
-        totalCount,
-        " result -> ",
-        result,
-        "Key: ",
-        items.LastEvaluatedKey
-      );
-    }
+    console.log("Last evaluated key", items.LastEvaluatedKey);
+
+    await Promise.map(
+      items.Items,
+      (item) =>
+        saveToS3Promise(
+          { dynamodb: item, tableName },
+          dwOutputBucket,
+          dwOutputBucketPathPrefix
+        ),
+      { concurrency: 500 }
+    ).then((results) => {
+      const failed = results.filter((result) => !result).length;
+      console.log("Failed", failed);
+      totalCount += results.length;
+      console.log("totalCount", totalCount);
+    });
   } while (typeof items.LastEvaluatedKey != "undefined");
 
   console.log(`Uploaded ${totalCount} items from ${TableName} table`);
