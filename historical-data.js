@@ -1,5 +1,6 @@
 const { snakeCase } = require("change-case");
 const { DynamoDB } = require("aws-sdk");
+const { saveToS3Promise } = require("./handler");
 
 const docClient = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
@@ -8,26 +9,36 @@ const docClient = new DynamoDB.DocumentClient({
   convertResponseTypes: false,
 });
 
-exports.fetchAll = async function main(event, context) {
-  console.log("event", event);
+const dwOutputBucket = process.env.DW_OUTPUT_BUCKET || "tc-dw-dev-dw-raw";
+const dwOutputBucketPathPrefix =
+  process.env.DW_OUTPUT_BUCKET_PATH_PREFIX || "Member";
 
+exports.fetchAll = async function main(event, context) {
   const TableName = event.tableName;
+
   let params = { TableName: TableName, Limit: 200 };
   let items;
   let totalCount = 0;
 
-  let tableName = snakeCase(TableName);
-  console.log('tableName', tableName);
+  const tableName = snakeCase(TableName);
+
   do {
     items = await docClient.scan(params).promise();
     params.ExclusiveStartKey = items.LastEvaluatedKey;
 
     for (const item of items.Items) {
-      console.log("item", item);
+      const result = await saveToS3Promise(
+        { dynamodb: item, tableName },
+        dwOutputBucket,
+        dwOutputBucketPathPrefix
+      );
+      console.log("result", result);
     }
 
     totalCount++;
-  } while (typeof items.LastEvaluatedKey != "undefined" && totalCount < 5);
+  } while (typeof items.LastEvaluatedKey != "undefined");
+
+  console.log(`Uploaded ${totalCount} items from ${TableName} table`);
 
   context.succeed();
 };

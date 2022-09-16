@@ -52,8 +52,8 @@ exports.processAndSave = function main(event, context) {
   });
 };
 
-const getPartitionKey = () => {
-  const now = new Date();
+const getPartitionKey = (updatedAt) => {
+  const now = updatedAt == null ? new Date() : new Date(updatedAt);
 
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
@@ -105,7 +105,7 @@ async function saveToS3Promise(
 ) {
   try {
     tableName = snakeCase(tableName);
-    const destKey = `${tableName}/${getPartitionKey()}/${
+    const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${
       dynamodb[getPrimaryKey(tableName)]
     }.json`;
 
@@ -117,9 +117,11 @@ async function saveToS3Promise(
 
     console.log("Uploading to S3...", params);
     await s3Client.send(new PutObjectCommand(params));
-    console.log("Successfully uploaded to S3");
+    console.log("Successfully uploaded to S3", params);
     return true;
   } catch (err) {
     return false;
   }
 }
+
+exports.saveToS3Promise = saveToS3Promise;
