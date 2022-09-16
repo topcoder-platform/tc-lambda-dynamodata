@@ -80,7 +80,7 @@ const getCWQuery = (metricName, tableName, count) => {
         Timestamp: new Date(),
       },
     ],
-    Namespace: `DW/SUMO/AUTH0`,
+    Namespace: `DW/TOPCODER/MEMBER`,
   };
 };
 
