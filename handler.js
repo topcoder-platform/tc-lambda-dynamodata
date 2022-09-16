@@ -18,8 +18,6 @@ const dwOutputBucketPathPrefix =
   process.env.DW_OUTPUT_BUCKET_PATH_PREFIX || "Member";
 
 exports.processAndSave = function main(event, context) {
-  console.log("Event", JSON.stringify(event));
-
   const tasks = [];
 
   const data = event.Records.map(({ dynamodb, eventSourceARN }) => ({
