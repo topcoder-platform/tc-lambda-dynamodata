@@ -33,9 +33,8 @@ exports.fetchAll = async function main(event, context) {
         dwOutputBucketPathPrefix
       );
       console.log("result", result);
+      totalCount++;
     }
-
-    totalCount++;
   } while (typeof items.LastEvaluatedKey != "undefined");
 
   console.log(`Uploaded ${totalCount} items from ${TableName} table`);
