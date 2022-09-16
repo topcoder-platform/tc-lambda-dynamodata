@@ -17,6 +17,10 @@ exports.fetchAll = async function main(event, context) {
   const TableName = event.tableName;
 
   let params = { TableName: TableName, Limit: 2000 };
+  if (event.exclusiveStartKey != null) {
+    params.ExclusiveStartKey = event.exclusiveStartKey;
+  }
+
   let items;
   let totalCount = 0;
 
