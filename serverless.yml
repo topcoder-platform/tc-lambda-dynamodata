@@ -1,5 +1,5 @@
-app: tc-lambda-profiledata
-service: tc-lambda-profiledata
+app: tc-lambda-dynamodata
+service: tc-lambda-dynamodata
 
 provider:
   name: aws
