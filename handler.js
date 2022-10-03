@@ -125,9 +125,10 @@ async function saveToS3AsParquetPromise(
 ) {
   try {
     tableName = snakeCase(tableName);
-
+    console.log(tableName, "Record", dynamodb);
     const mappedItem = mapItem(dynamodb);
-    const updatedAt = new Date(item.updated);
+    console.log("After mapping", mappedItem);
+    const updatedAt = new Date(dynamodb.updated);
     const partitionKey = getPartitionKey(updatedAt);
 
     await fs.promises.mkdir(pathPrefix + "/" + partitionKey, {
