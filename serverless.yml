@@ -65,10 +65,7 @@ functions:
     events:
       - stream:
           type: dynamodb
-          arn:
-            Fn::GetAtt:
-              - Challenge
-              - StreamArn
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Challenge/stream/2021-01-19T11:24:18.051"
           batchSize: 100
           startingPosition: LATEST
           enabled: true
