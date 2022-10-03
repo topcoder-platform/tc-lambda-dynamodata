@@ -111,7 +111,7 @@ const getPrimaryKey = (tableName) => {
 
 const mapItem = (tableName, item) => {
   switch (tableName) {
-    case "Challenge":
+    case "challenge":
       return challengeMapper.map(item);
     default:
       return item;
