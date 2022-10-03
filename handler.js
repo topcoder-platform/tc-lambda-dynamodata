@@ -111,7 +111,7 @@ const getPrimaryKey = (tableName) => {
 
 const mapItem = (tableName, item) => {
   switch (tableName) {
-    case "challenge":
+    case "Challenge":
       return challengeMapper.map(item);
     default:
       return item;
@@ -126,7 +126,7 @@ async function saveToS3AsParquetPromise(
   try {
     tableName = snakeCase(tableName);
     console.log(tableName, "Record", dynamodb);
-    const mappedItem = mapItem(dynamodb);
+    const mappedItem = mapItem(tableName, dynamodb);
     console.log("After mapping", mappedItem);
     const updatedAt = new Date(dynamodb.updated);
     const partitionKey = getPartitionKey(updatedAt);
