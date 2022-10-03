@@ -31,10 +31,12 @@ const schema = new parquet.ParquetSchema({
       track: { type: "UTF8", optional: true },
       subTrack: { type: "UTF8", optional: true },
       isTask: { type: "BOOLEAN", optional: true },
+      pureV5Task: { type: "BOOLEAN", optional: true }, // TODO: Reload historical challenge data
       reviewType: { type: "UTF8", optional: true },
       confidentialityType: { type: "UTF8", optional: true },
       directProjectId: { type: "INT64", optional: true },
       forumId: { type: "INT64", optional: true },
+      screeningScorecardId: { type: "INT64", optional: true },
       reviewScorecardId: { type: "INT64", optional: true },
     },
   },

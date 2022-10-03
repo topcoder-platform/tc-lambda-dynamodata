@@ -1,5 +1,7 @@
 {
   "tableName": "Challenge",
-  "limit": 5,
-  "outputBucketPathPrefix": "Challenge"
+  "limit": 2000,
+  "outputBucketPathPrefix": "Challenge",
+  "concurrency": 500,
+  "numRecordsToProcess": 15000
 }

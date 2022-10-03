@@ -55,6 +55,9 @@ exports.fetchAll = async function main(event, context) {
     items = await docClient.scan(params).promise();
     params.ExclusiveStartKey = items.LastEvaluatedKey;
 
+    console.log(`Fetched ${items.Items.length} items`);
+    console.log(`LastEvaluatedKey:`, items.LastEvaluatedKey);
+
     await Promise.map(
       items.Items,
       async (item) => {
@@ -74,33 +77,30 @@ exports.fetchAll = async function main(event, context) {
           filePath
         );
 
-        await writer.appendRow(mappedItem);
-        await writer.close();
+        try {
+          await writer.appendRow(mappedItem);
+          await writer.close();
 
-        // read file as blob
-        const blob = await fs.promises.readFile(filePath);
+          // read file as blob
+          const blob = await fs.promises.readFile(filePath);
 
-        // upload blob to s3
-        const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/challenge-${mappedItem.id}.parquet`;
-        console.log("Uploading item number: ", totalCount, " to s3", Key);
-        const s3Params = {
-          Bucket: dwOutputBucket,
-          Key,
-          Body: blob,
-        };
-        return s3Client.upload(s3Params).promise();
+          // upload blob to s3
+          const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/challenge-${mappedItem.id}.parquet`;
+          const s3Params = {
+            Bucket: dwOutputBucket,
+            Key,
+            Body: blob,
+          };
+          return s3Client.upload(s3Params).promise();
+        } catch (err) {
+          console.log("Failed to process", mappedItem.id, err);
+        }
       },
       { concurrency: Concurrency }
-    ).then((results) => {
-      console.log("Results", results);
-      // const failed = results.filter((result) => !result).length;
-      // console.log("Failed", failed);
+    ).then((_results) => {
       console.log("totalCount", totalCount);
     });
-  } while (
-    typeof items.LastEvaluatedKey != "undefined" &&
-    totalCount < NumRecordsToProcess
-  );
+  } while (typeof items.LastEvaluatedKey != "undefined");
 
   console.log(`Uploaded ${totalCount} items from ${TableName} table`);
 
