@@ -133,14 +133,19 @@ const mapItem = (tableName, item) => {
 async function saveToS3AsParquetPromise(
   { tableName, dynamodb },
   pathPrefix,
-  dwDestBucket
+  dwDestBucket,
+  outputBucketPathPrefix
 ) {
   try {
     tableName = snakeCase(tableName);
 
+    console.log("Processing record", dynamodb, "for table", tableName);
+
     const mappedItem = mapItem(tableName, dynamodb);
     const updatedAt = new Date(dynamodb.updated);
     const partitionKey = getPartitionKey(updatedAt);
+
+    console.log("Mapped item", mappedItem);
 
     await fs.promises.mkdir(pathPrefix + "/" + partitionKey, {
       recursive: true,
@@ -153,17 +158,27 @@ async function saveToS3AsParquetPromise(
     await writer.appendRow(mappedItem);
     await writer.close();
 
+    console.log(
+      "Writing to S3",
+      filePath,
+      dwDestBucket,
+      outputBucketPathPrefix,
+      tableName,
+      partitionKey
+    );
+
     const blob = await fs.promises.readFile(filePath);
     const destKey = `${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
 
     const params = {
       Bucket: dwDestBucket,
-      Key: `${dwChallengeOutputBucketPathPrefix}/${destKey}`,
+      Key: `${outputBucketPathPrefix}/${destKey}`,
       Body: blob,
     };
 
     const command = new PutObjectCommand(params);
-    await s3Client.send(command);
+
+    console.log("PutObjectCommand", await s3Client.send(command));
 
     return true;
   } catch (err) {
