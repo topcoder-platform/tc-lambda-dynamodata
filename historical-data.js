@@ -121,8 +121,11 @@ exports.fetchAll = async function main(event, context) {
       InvocationType: "Event",
       Payload: JSON.stringify(newEvent),
     };
-    // await lambda.invoke(lambdaParams).promise();
+    await lambda.invoke(lambdaParams).promise();
+    console.log("Invoked lambda again");
+    context.succeed();
+  } else {
+    console.log('Successfully pulled all data from table "${TableName}"');
+    context.succeed();
   }
-
-  context.succeed();
 };
