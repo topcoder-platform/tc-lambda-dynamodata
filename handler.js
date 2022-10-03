@@ -142,14 +142,12 @@ async function saveToS3AsParquetPromise(
     console.log("Processing record", dynamodb, "for table", tableName);
 
     const mappedItem = mapItem(tableName, dynamodb);
-    const updatedAt = new Date(dynamodb.updated);
-    const partitionKey = getPartitionKey(updatedAt);
-
-    console.log("Mapped item", mappedItem);
+    const partitionKey = getPartitionKey(null); // use current date as partition key since challenge data.updatedAt is not reliable
 
     await fs.promises.mkdir(pathPrefix + "/" + partitionKey, {
       recursive: true,
     });
+
     const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}.parquet`;
     const writer = await parquet.ParquetWriter.openFile(
       challengeSchema,
@@ -157,15 +155,6 @@ async function saveToS3AsParquetPromise(
     );
     await writer.appendRow(mappedItem);
     await writer.close();
-
-    console.log(
-      "Writing to S3",
-      filePath,
-      dwDestBucket,
-      outputBucketPathPrefix,
-      tableName,
-      partitionKey
-    );
 
     const blob = await fs.promises.readFile(filePath);
     const destKey = `${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
@@ -178,7 +167,7 @@ async function saveToS3AsParquetPromise(
 
     const command = new PutObjectCommand(params);
 
-    console.log("PutObjectCommand", await s3Client.send(command));
+    await s3Client.send(command);
 
     return true;
   } catch (err) {
