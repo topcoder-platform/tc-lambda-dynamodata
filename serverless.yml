@@ -57,8 +57,8 @@ functions:
   stream-to-dw:
     handler: handler.processAndSave
     architecture: arm64
-    memorySize: 128
-    timeout: 30
+    memorySize: 2048
+    timeout: 60
     environment:
       DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
       DW_OUTPUT_BUCKET_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}
