@@ -1,8 +1,5 @@
 const AWS = require("aws-sdk");
 
-const mapDate = (dateString) =>
-  dateString != null ? new Date(dateString).getTime() : "";
-
 function fixJson(obj, field) {
   if (obj[field] != null) {
     if (obj[field].wrapperName === "Set") {

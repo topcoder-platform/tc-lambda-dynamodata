@@ -1,5 +1,11 @@
+const fs = require("fs");
+const parquet = require("parquetjs");
+
 const { snakeCase } = require("change-case");
 const { DynamoDB } = require("aws-sdk");
+
+const challengeMapper = require("./mapper/challenge/Challenge");
+const challengeSchema = require("./schema/challenge/challenge");
 
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const {
@@ -16,6 +22,7 @@ const cloudwatchClient = new CloudWatchClient({
 const dwOutputBucket = process.env.DW_OUTPUT_BUCKET || "tc-dw-dev-dw-raw";
 const dwOutputBucketPathPrefix =
   process.env.DW_OUTPUT_BUCKET_PATH_PREFIX || "Member";
+const pathPrefix = process.env.PATH_PREFIX || "/tmp";
 
 exports.processAndSave = function main(event, context) {
   const tasks = [];
@@ -26,9 +33,13 @@ exports.processAndSave = function main(event, context) {
   }));
 
   for (const record of data) {
-    tasks.push(
-      saveToS3Promise(record, dwOutputBucket, dwOutputBucketPathPrefix)
-    );
+    if (record.tableName === "Challenge") {
+      tasks.push(saveToS3AsParquetPromise(record, pathPrefix, dwOutputBucket));
+    } else {
+      tasks.push(
+        saveToS3Promise(record, dwOutputBucket, dwOutputBucketPathPrefix)
+      );
+    }
   }
 
   Promise.all(tasks).then(async (results) => {
@@ -97,6 +108,57 @@ const getPrimaryKey = (tableName) => {
       return "userId";
   }
 };
+
+const mapItem = (tableName, item) => {
+  switch (tableName) {
+    case "challenge":
+      return challengeMapper.map(item);
+    default:
+      return item;
+  }
+};
+
+async function saveToS3AsParquetPromise(
+  { tableName, dynamodb },
+  pathPrefix,
+  dwDestBucket
+) {
+  try {
+    tableName = snakeCase(tableName);
+
+    const mappedItem = mapItem(dynamodb);
+    const updatedAt = new Date(item.updated);
+    const partitionKey = getPartitionKey(updatedAt);
+
+    await fs.promises.mkdir(pathPrefix + "/" + partitionKey, {
+      recursive: true,
+    });
+    const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}.parquet`;
+    const writer = await parquet.ParquetWriter.openFile(
+      challengeSchema,
+      filePath
+    );
+    await writer.appendRow(mappedItem);
+    await writer.close();
+
+    const blob = await fs.promises.readFile(filePath);
+    const destKey = `${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
+
+    const params = {
+      Bucket: dwDestBucket,
+      Key: `Challenge/${destKey}`,
+      Body: blob,
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+
+    return true;
+  } catch (err) {
+    console.log("Error: ", err);
+    return false;
+  }
+}
 
 async function saveToS3Promise(
   { tableName, dynamodb },
