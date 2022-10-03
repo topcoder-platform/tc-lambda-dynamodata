@@ -81,7 +81,7 @@ exports.fetchAll = async function main(event, context) {
         const blob = await fs.promises.readFile(filePath);
 
         // upload blob to s3
-        const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/challenge-${mappedItem.id}}.parquet`;
+        const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/challenge-${mappedItem.id}.parquet`;
         console.log("Uploading item number: ", totalCount, " to s3", Key);
         const s3Params = {
           Bucket: dwOutputBucket,
