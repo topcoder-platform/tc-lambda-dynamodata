@@ -1,7 +1,6 @@
 {
-  "S3_INPUT_BUCKET": "tc-auth0-prod-logs",
-  "S3_OUTPUT_BUCKET": "tc-auth0-prod-prod-processed",
+  "AWS_REGION": "us-east-1",
   "S3_DW_OUTPUT_BUCKET": "tc-dw-dev-dw-raw",
-  "S3_DW_OUTPUT_BUCKET_PATH_PREFIX": "Sumo/Auth0",
-  "LAMBDA_ROLE": "arn:aws:iam::409275337247:role/auth0-sumologs-lambda-role"
+  "S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX": "Member",
+  "S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX": "Challenge"
 }

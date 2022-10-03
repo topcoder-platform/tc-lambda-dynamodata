@@ -1,5 +1,3 @@
-const AWS = require("aws-sdk");
-
 function fixJson(obj, field) {
   if (obj[field] != null) {
     if (obj[field].wrapperName === "Set") {

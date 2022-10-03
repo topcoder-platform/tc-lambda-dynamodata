@@ -20,8 +20,13 @@ const cloudwatchClient = new CloudWatchClient({
 });
 
 const dwOutputBucket = process.env.DW_OUTPUT_BUCKET || "tc-dw-dev-dw-raw";
-const dwOutputBucketPathPrefix =
-  process.env.DW_OUTPUT_BUCKET_PATH_PREFIX || "Member";
+
+const dwMemberOutputBucketPathPrefix =
+  process.env.S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX || "Member";
+
+const dwChallengeOutputBucketPathPrefix =
+  process.env.S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX || "Challenge";
+
 const pathPrefix = process.env.PATH_PREFIX || "/tmp";
 
 exports.processAndSave = function main(event, context) {
@@ -34,10 +39,17 @@ exports.processAndSave = function main(event, context) {
 
   for (const record of data) {
     if (record.tableName === "Challenge") {
-      tasks.push(saveToS3AsParquetPromise(record, pathPrefix, dwOutputBucket));
+      tasks.push(
+        saveToS3AsParquetPromise(
+          record,
+          pathPrefix,
+          dwOutputBucket,
+          dwChallengeOutputBucketPathPrefix
+        )
+      );
     } else {
       tasks.push(
-        saveToS3Promise(record, dwOutputBucket, dwOutputBucketPathPrefix)
+        saveToS3Promise(record, dwOutputBucket, dwMemberOutputBucketPathPrefix)
       );
     }
   }
@@ -125,9 +137,8 @@ async function saveToS3AsParquetPromise(
 ) {
   try {
     tableName = snakeCase(tableName);
-    console.log(tableName, "Record", dynamodb);
+
     const mappedItem = mapItem(tableName, dynamodb);
-    console.log("After mapping", mappedItem);
     const updatedAt = new Date(dynamodb.updated);
     const partitionKey = getPartitionKey(updatedAt);
 
@@ -147,7 +158,7 @@ async function saveToS3AsParquetPromise(
 
     const params = {
       Bucket: dwDestBucket,
-      Key: `Challenge/${destKey}`,
+      Key: `${dwChallengeOutputBucketPathPrefix}/${destKey}`,
       Body: blob,
     };
 
@@ -164,17 +175,18 @@ async function saveToS3AsParquetPromise(
 async function saveToS3Promise(
   { tableName, dynamodb },
   dwDestBucket,
-  dwOutputBucketPathPrefix
+  dwMemberOutputBucketPathPrefix
 ) {
   try {
     tableName = snakeCase(tableName);
+
     const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${
       dynamodb[getPrimaryKey(tableName)]
     }.json`;
 
     const params = {
       Bucket: dwDestBucket,
-      Key: `${dwOutputBucketPathPrefix}/${destKey}`,
+      Key: `${dwMemberOutputBucketPathPrefix}/${destKey}`,
       Body: Buffer.from(JSON.stringify(dynamodb)),
     };
 

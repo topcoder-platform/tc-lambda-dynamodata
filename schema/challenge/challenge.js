@@ -38,6 +38,7 @@ const schema = new parquet.ParquetSchema({
       forumId: { type: "INT64", optional: true },
       screeningScorecardId: { type: "INT64", optional: true },
       reviewScorecardId: { type: "INT64", optional: true },
+      migration: { type: "INT64", optional: true },
     },
   },
   billing: {

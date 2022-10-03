@@ -36,7 +36,8 @@ provider:
           Action:
             - "s3:PutObject"
           Resource:
-            - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}/*"
+            - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}/*"
+            - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX}/*"
         # Allow putting metrics to CloudWatch
         - Effect: Allow
           Action:
