@@ -1,0 +1,5 @@
+{
+  "tableName": "Challenge",
+  "limit": 5,
+  "outputBucketPathPrefix": "Challenge"
+}

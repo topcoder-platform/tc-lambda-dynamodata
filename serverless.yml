@@ -30,6 +30,7 @@ provider:
             - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStats"
             - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStatsHistory"
             - "arn:aws:dynamodb:us-east-1:409275337247:table/Tags"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/Challenge"
         # Allow functions to write objects in a bucket in a different account
         - Effect: Allow
           Action:
