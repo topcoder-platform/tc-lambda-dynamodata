@@ -53,7 +53,8 @@ functions:
     timeout: 900
     environment:
       DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
-      DW_OUTPUT_BUCKET_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX}
 
   stream-to-dw:
     handler: handler.processAndSave
@@ -62,7 +63,8 @@ functions:
     timeout: 60
     environment:
       DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
-      DW_OUTPUT_BUCKET_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
     events:
       - stream:
           type: dynamodb
