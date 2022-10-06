@@ -26,6 +26,11 @@ const mappedChallenge = (challenge) => {
   for (const field of jsonFields) {
     fixJson(challenge, field);
   }
+
+  if (challenge.task != null && challenge.task.memberId == null) {
+    delete challenge.task.memberId; // bug in source system that results in null value
+  }
+
   return challenge;
 };
 

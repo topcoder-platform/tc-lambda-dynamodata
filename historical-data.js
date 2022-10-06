@@ -8,6 +8,9 @@ const fs = require("fs");
 const challengeMapper = require("./mapper/challenge/Challenge");
 const challengeSchema = require("./schema/challenge/challenge");
 
+const submissionMapper = require("./mapper/challenge/Submission");
+const submissionSchema = require("./schema/submission/submission");
+
 const docClient = new DynamoDB.DocumentClient({
   apiVersion: "2012-08-10",
   sslEnabled: false,
@@ -21,12 +24,25 @@ const dwOutputBucket = process.env.DW_OUTPUT_BUCKET || "tc-dw-dev-dw-raw";
 const pathPrefix = process.env.PATH_PREFIX || "./files";
 
 const mapItem = (tableName, item) => {
-  switch (tableName) {
-    case "challenge":
-      return challengeMapper.map(item);
-    default:
-      return item;
+  if (tableName === "challenge") {
+    return challengeMapper.map(item);
   }
+
+  if (tableName === "submission") {
+    return submissionMapper.map(item);
+  }
+
+  return item;
+};
+
+const getSchemaName = (table) => {
+  if (table === "challenge") {
+    return challengeSchema;
+  } else if (table === "submission") {
+    return submissionSchema;
+  }
+
+  return null;
 };
 
 const getPartitionKey = (date) => {
@@ -36,7 +52,7 @@ const getPartitionKey = (date) => {
 exports.fetchAll = async function main(event, context) {
   const TableName = event.tableName;
   const Limit = event.limit || 2000;
-  const OutputBucketPathPrefix = event.outputBucketPathPrefix || "Member";
+  const OutputBucketPathPrefix = event.outputBucketPathPrefix || "Challenge";
   const NumRecordsToProcess = event.numRecordsToProcess || 10000;
   const Concurrency = event.concurrency | 5;
 
@@ -71,9 +87,9 @@ exports.fetchAll = async function main(event, context) {
           recursive: true,
         });
         totalCount++;
-        const filePath = `${pathPrefix}/${partitionKey}/challenge-${mappedItem.id}}.parquet`;
+        const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}}.parquet`;
         const writer = await parquet.ParquetWriter.openFile(
-          challengeSchema,
+          getSchemaName(tableName),
           filePath
         );
 
@@ -85,12 +101,16 @@ exports.fetchAll = async function main(event, context) {
           const blob = await fs.promises.readFile(filePath);
 
           // upload blob to s3
-          const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/challenge-${mappedItem.id}.parquet`;
+          const Key = `${OutputBucketPathPrefix}/${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
           const s3Params = {
             Bucket: dwOutputBucket,
             Key,
             Body: blob,
           };
+
+          console.log("Bucket:", dwOutputBucket);
+          console.log("Key:", Key);
+
           return s3Client.upload(s3Params).promise();
         } catch (err) {
           console.log("Failed to process", mappedItem.id, err);

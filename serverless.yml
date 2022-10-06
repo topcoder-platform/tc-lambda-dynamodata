@@ -31,6 +31,7 @@ provider:
             - "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStatsHistory"
             - "arn:aws:dynamodb:us-east-1:409275337247:table/Tags"
             - "arn:aws:dynamodb:us-east-1:409275337247:table/Challenge"
+            - "arn:aws:dynamodb:us-east-1:409275337247:table/Submission"
         # Allow functions to write objects in a bucket in a different account
         - Effect: Allow
           Action:
@@ -38,6 +39,7 @@ provider:
           Resource:
             - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}/*"
             - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX}/*"
+            - "arn:aws:s3:::${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}/${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX}/*"
         # Allow putting metrics to CloudWatch
         - Effect: Allow
           Action:
@@ -55,6 +57,7 @@ functions:
       DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
       S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
       S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX}
 
   stream-to-dw:
     handler: handler.processAndSave
@@ -64,7 +67,8 @@ functions:
     environment:
       DW_OUTPUT_BUCKET: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET}
       S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
-      S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_MEMBER_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX}
+      S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX: ${file(./config/${self:provider.stage}.json):S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX}
     events:
       - stream:
           type: dynamodb
