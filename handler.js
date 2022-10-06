@@ -7,6 +7,9 @@ const { DynamoDB } = require("aws-sdk");
 const challengeMapper = require("./mapper/challenge/Challenge");
 const challengeSchema = require("./schema/challenge/challenge");
 
+const submissionMapper = require("./mapper/challenge/Submission");
+const submissionSchema = require("./schema/submission/submission");
+
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const {
   CloudWatchClient,
@@ -125,9 +128,21 @@ const mapItem = (tableName, item) => {
   switch (tableName) {
     case "challenge":
       return challengeMapper.map(item);
+    case "submission":
+      return submissionMapper.map(item);
     default:
       return item;
   }
+};
+
+const getSchema = (table) => {
+  if (table === "challenge") {
+    return challengeSchema;
+  } else if (table === "submission") {
+    return submissionSchema;
+  }
+
+  return null;
 };
 
 async function saveToS3AsParquetPromise(
@@ -150,7 +165,7 @@ async function saveToS3AsParquetPromise(
 
     const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}.parquet`;
     const writer = await parquet.ParquetWriter.openFile(
-      challengeSchema,
+      getSchema(tableName),
       filePath
     );
     await writer.appendRow(mappedItem);

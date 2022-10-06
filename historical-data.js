@@ -108,10 +108,7 @@ exports.fetchAll = async function main(event, context) {
             Body: blob,
           };
 
-          console.log("Bucket:", dwOutputBucket);
-          console.log("Key:", Key);
-
-          return s3Client.upload(s3Params).promise();
+          return await s3Client.upload(s3Params).promise();
         } catch (err) {
           console.log("Failed to process", mappedItem.id, err);
         }
