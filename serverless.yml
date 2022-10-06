@@ -72,7 +72,7 @@ functions:
     events:
       - stream:
           type: dynamodb
-          anr: "arn:aws:dynamodb:us-east-1:409275337247:table/Submission/stream/2021-02-26T07:11:26.606"
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Submission/stream/2021-02-26T07:11:26.606"
           batchSize: 100
           startingPosition: LATEST
           enabled: true
