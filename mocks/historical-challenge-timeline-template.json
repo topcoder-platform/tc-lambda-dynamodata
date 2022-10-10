@@ -1,0 +1,7 @@
+{
+  "tableName": "ChallengeTimelineTemplate",
+  "limit": 3000,
+  "outputBucketPathPrefix": "Challenge",
+  "concurrency": 1000,
+  "numRecordsToProcess": 15000
+}

@@ -2,8 +2,22 @@ function fixJson(obj, field) {
   if (obj[field] != null) {
     if (obj[field].wrapperName === "Set") {
       obj[field] = obj[field].values.map((v) => JSON.parse(v));
+      if (obj[field] == null) {
+        obj[field] = [];
+      }
     } else {
       obj[field] = JSON.parse(obj[field]);
+    }
+
+    if (obj["prizeSets"] != null) {
+      obj.prizeSets = obj.prizeSets.flatMap((x) =>
+        x.prizes.map((y, index) => ({
+          type: x.type,
+          currency: y.type,
+          value: y.value,
+          position: index + 1,
+        }))
+      );
     }
   }
 }
@@ -27,8 +41,13 @@ const mappedChallenge = (challenge) => {
     fixJson(challenge, field);
   }
 
-  if (challenge.task != null && challenge.task.memberId == null) {
-    delete challenge.task.memberId; // bug in source system that results in null value
+  if (challenge.task != null) {
+    if (challenge.task.memberId == null) {
+      delete challenge.task.memberId; // bug in source system that results in null value
+    }
+    if (challenge.task.isTask == null) {
+      delete challenge.task.isTask; // bug in source system that results in null value
+    }
   }
 
   return challenge;

@@ -6,7 +6,12 @@ const Promise = require("bluebird");
 const fs = require("fs");
 
 const challengeMapper = require("./mapper/challenge/Challenge");
+
 const challengeSchema = require("./schema/challenge/challenge");
+const challengeTrackSchema = require("./schema/challenge/challenge-track");
+const challengeTypeSchema = require("./schema/challenge/challenge-type");
+const challengeTimelineTemplateSchema = require("./schema/challenge/challenge-timeline-template");
+const resource = require("./schema/challenge/resource");
 
 const submissionMapper = require("./mapper/challenge/Submission");
 const submissionSchema = require("./schema/submission/submission");
@@ -40,6 +45,14 @@ const getSchemaName = (table) => {
     return challengeSchema;
   } else if (table === "submission") {
     return submissionSchema;
+  } else if (table === "challenge_track") {
+    return challengeTrackSchema;
+  } else if (table === "challenge_type") {
+    return challengeTypeSchema;
+  } else if (table === "challenge_timeline_template") {
+    return challengeTimelineTemplateSchema;
+  } else if (table === "resource") {
+    return resource;
   }
 
   return null;
@@ -80,7 +93,8 @@ exports.fetchAll = async function main(event, context) {
         // save as parquet file
         const mappedItem = mapItem(tableName, item);
 
-        const updatedAt = new Date(item.updated);
+        const updatedAt =
+          item.updated == null ? new Date() : new Date(item.updated);
         const partitionKey = getPartitionKey(updatedAt);
 
         await fs.promises.mkdir(pathPrefix + "/" + partitionKey, {
@@ -142,7 +156,7 @@ exports.fetchAll = async function main(event, context) {
     console.log("Invoked lambda again");
     context.succeed();
   } else {
-    console.log('Successfully pulled all data from table "${TableName}"');
+    console.log(`Successfully pulled all data from table "${TableName}"`);
     context.succeed();
   }
 };
