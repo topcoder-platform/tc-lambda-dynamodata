@@ -96,13 +96,10 @@ const schema = new parquet.ParquetSchema({
     repeated: true,
     optional: true,
     fields: {
-      prizes: {
-        repeated: true,
-        fields: {
-          type: { type: "UTF8", optional: true },
-          value: { type: "DOUBLE", optional: true },
-        },
-      },
+      type: { type: "UTF8", optional: true },
+      value: { type: "DOUBLE", optional: true },
+      currency: { type: "UTF8", optional: true },
+      position: { type: "INT32", optional: true },
     },
   },
   tags: {

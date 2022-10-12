@@ -9,7 +9,7 @@ function fixJson(obj, field) {
       obj[field] = JSON.parse(obj[field]);
     }
 
-    if (obj["prizeSets"] != null) {
+    if (field === "prizeSets" && obj["prizeSets"] != null) {
       obj.prizeSets = obj.prizeSets.flatMap((x) =>
         x.prizes.map((y, index) => ({
           type: x.type,
