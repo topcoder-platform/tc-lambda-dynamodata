@@ -69,7 +69,7 @@ exports.fetchAll = async function main(event, context) {
   const TableName = event.tableName;
   const Limit = event.limit || 2000;
   const OutputBucketPathPrefix = event.outputBucketPathPrefix || "Challenge";
-  const NumRecordsToProcess = event.numRecordsToProcess || 10000;
+  // const NumRecordsToProcess = event.numRecordsToProcess || 10000;
   const Concurrency = event.concurrency | 5;
 
   let params = { TableName, Limit };

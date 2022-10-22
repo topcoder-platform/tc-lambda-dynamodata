@@ -4,3 +4,5 @@ scripts
 scripts/*
 temp/*
 temp
+data/*
+data
