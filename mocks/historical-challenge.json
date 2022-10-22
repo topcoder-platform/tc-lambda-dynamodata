@@ -3,6 +3,5 @@
   "limit": 3000,
   "outputBucketPathPrefix": "Challenge",
   "concurrency": 1000,
-  "numRecordsToProcess": 15000,
-  "exclusiveStartKey": { "id": "ea38c149-bbaf-4f43-a69b-d7c5f8bf1ea6" }
+  "numRecordsToProcess": 15000
 }

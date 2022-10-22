@@ -1,0 +1,7 @@
+{
+  "tableName": "Certification",
+  "limit": 3000,
+  "outputBucketPathPrefix": "Certification",
+  "concurrency": 1000,
+  "numRecordsToProcess": 15000
+}

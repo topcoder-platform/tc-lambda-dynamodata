@@ -66,7 +66,7 @@ const schema = new parquet.ParquetSchema({
     repeated: false,
     fields: {
       isAssigned: { type: "BOOLEAN" },
-      isTask: { type: "BOOLEAN" },
+      isTask: { type: "BOOLEAN", optional: true },
       memberId: { type: "INT64", optional: true },
     },
   },

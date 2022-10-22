@@ -117,3 +117,8 @@ functions:
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Tags/stream/2016-04-19T04:21:26.424"
           batchSize: 10
           enabled: false
+      - stream:
+          type: dynamodb
+          arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Certification/stream/2022-08-22T02:15:30.122"
+          batchSize: 100
+          enabled: true

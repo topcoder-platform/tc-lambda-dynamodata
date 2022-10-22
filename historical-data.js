@@ -12,6 +12,7 @@ const challengeTrackSchema = require("./schema/challenge/challenge-track");
 const challengeTypeSchema = require("./schema/challenge/challenge-type");
 const challengeTimelineTemplateSchema = require("./schema/challenge/challenge-timeline-template");
 const resource = require("./schema/challenge/resource");
+const resourceRole = require("./schema/challenge/resource-role");
 
 const submissionMapper = require("./mapper/challenge/Submission");
 const submissionSchema = require("./schema/submission/submission");
@@ -53,6 +54,8 @@ const getSchemaName = (table) => {
     return challengeTimelineTemplateSchema;
   } else if (table === "resource") {
     return resource;
+  } else if (table === "resource_role") {
+    return resourceRole;
   }
 
   return null;
