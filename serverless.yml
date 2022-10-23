@@ -75,45 +75,45 @@ functions:
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Submission/stream/2021-02-26T07:11:26.606"
           batchSize: 100
           startingPosition: LATEST
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Challenge/stream/2021-01-19T11:24:18.051"
           batchSize: 100
           startingPosition: LATEST
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberAggregatedSkills/stream/2016-04-19T04:21:10.579"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberEnteredSkills/stream/2018-10-11T05:07:18.168"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfileTrait/stream/2018-10-16T14:29:15.370"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberProfile/stream/2016-04-19T04:20:58.068"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStats/stream/2016-04-19T04:21:16.943"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberStatsHistory/stream/2018-10-13T05:44:07.762"
           batchSize: 10
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Tags/stream/2016-04-19T04:21:26.424"
           batchSize: 10
-          enabled: false
+          enabled: true
