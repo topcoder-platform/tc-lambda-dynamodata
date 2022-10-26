@@ -81,7 +81,7 @@ functions:
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/Challenge/stream/2021-01-19T11:24:18.051"
           batchSize: 100
           startingPosition: LATEST
-          enabled: false
+          enabled: true
       - stream:
           type: dynamodb
           arn: "arn:aws:dynamodb:us-east-1:409275337247:table/MemberAggregatedSkills/stream/2016-04-19T04:21:10.579"
