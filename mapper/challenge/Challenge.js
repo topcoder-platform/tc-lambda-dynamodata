@@ -19,6 +19,10 @@ function fixJson(obj, field) {
         }))
       );
     }
+
+    if (field === "tags" && !Array.isArray(obj[field])) {
+      obj[field] = [obj[field]];
+    }
   }
 }
 
