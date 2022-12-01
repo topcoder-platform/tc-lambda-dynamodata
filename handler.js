@@ -41,7 +41,7 @@ exports.processAndSave = function main(event, context) {
   }));
 
   for (const record of data) {
-    if (record.tableName === "Challenge") {
+    if (["Challenge", "Submission"].includes(record.tableName)) {
       tasks.push(
         saveToS3AsParquetPromise(
           record,
@@ -199,9 +199,8 @@ async function saveToS3Promise(
   try {
     tableName = snakeCase(tableName);
 
-    const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${
-      dynamodb[getPrimaryKey(tableName)]
-    }.json`;
+    const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${dynamodb[getPrimaryKey(tableName)]
+      }.json`;
 
     const params = {
       Bucket: dwDestBucket,
