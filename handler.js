@@ -118,6 +118,7 @@ const getPrimaryKey = (tableName) => {
     case "member_stats_history":
       return "userId";
     case "tags":
+    case "submission":
       return "id";
     default:
       return "userId";
@@ -172,7 +173,7 @@ async function saveToS3AsParquetPromise(
     await writer.close();
 
     const blob = await fs.promises.readFile(filePath);
-    const destKey = `${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
+    const destKey = `${tableName}/${partitionKey}/${getPrimaryKey(tableName)}.parquet`;
 
     const params = {
       Bucket: dwDestBucket,
