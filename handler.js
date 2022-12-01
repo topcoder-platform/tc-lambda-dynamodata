@@ -41,7 +41,7 @@ exports.processAndSave = function main(event, context) {
   }));
 
   for (const record of data) {
-    if (record.tableName === "Challenge") {
+    if (["Challenge", "Submission"].includes(record.tableName)) {
       tasks.push(
         saveToS3AsParquetPromise(
           record,
@@ -118,6 +118,7 @@ const getPrimaryKey = (tableName) => {
     case "member_stats_history":
       return "userId";
     case "tags":
+    case "submission":
       return "id";
     default:
       return "userId";
@@ -172,7 +173,7 @@ async function saveToS3AsParquetPromise(
     await writer.close();
 
     const blob = await fs.promises.readFile(filePath);
-    const destKey = `${tableName}/${partitionKey}/${mappedItem.id}.parquet`;
+    const destKey = `${tableName}/${partitionKey}/${getPrimaryKey(tableName)}.parquet`;
 
     const params = {
       Bucket: dwDestBucket,
@@ -199,9 +200,8 @@ async function saveToS3Promise(
   try {
     tableName = snakeCase(tableName);
 
-    const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${
-      dynamodb[getPrimaryKey(tableName)]
-    }.json`;
+    const destKey = `${tableName}/${getPartitionKey(dynamodb.updatedAt)}/${dynamodb[getPrimaryKey(tableName)]
+      }.json`;
 
     const params = {
       Bucket: dwDestBucket,
