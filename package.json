@@ -4,11 +4,15 @@
   "version": "1.0.0",
   "author": "Rakib Ansary <rakibansary@gmail.com>",
   "license": "none",
+  "scripts": {
+    "historical": "serverless invoke local --function historical-data --path mocks/historical-submission.json"
+  },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.165.0",
     "@aws-sdk/client-s3": "^3.165.0",
     "bluebird": "^3.7.2",
     "change-case": "^4.1.2",
+    "moment": "^2.29.4",
     "parquetjs": "^0.11.2",
     "serverless": "^3.22.0",
     "shortid": "^2.2.16"

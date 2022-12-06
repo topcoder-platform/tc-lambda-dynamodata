@@ -104,7 +104,7 @@ exports.fetchAll = async function main(event, context) {
           recursive: true,
         });
         totalCount++;
-        const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}}.parquet`;
+        const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}.parquet`;
         const writer = await parquet.ParquetWriter.openFile(
           getSchemaName(tableName),
           filePath

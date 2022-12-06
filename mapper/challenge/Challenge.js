@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 function fixJson(obj, field) {
   if (obj[field] != null) {
     if (obj[field].wrapperName === "Set") {
@@ -53,6 +55,8 @@ const mappedChallenge = (challenge) => {
       delete challenge.task.isTask; // bug in source system that results in null value
     }
   }
+  challenge.updated = +moment(challenge.updated).format("x");
+  challenge.created = +moment(challenge.created).format("x");
 
   return challenge;
 };
