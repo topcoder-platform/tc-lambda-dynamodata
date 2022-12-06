@@ -30,6 +30,8 @@ const dwMemberOutputBucketPathPrefix =
 const dwChallengeOutputBucketPathPrefix =
   process.env.S3_DW_OUTPUT_BUCKET_CHALLENGE_PATH_PREFIX || "Challenge";
 
+const dwSubmissionOutputBucketPathPrefix =
+  process.env.S3_DW_OUTPUT_BUCKET_SUBMISSION_PATH_PREFIX || "Submission";
 const pathPrefix = process.env.PATH_PREFIX || "/tmp";
 
 exports.processAndSave = function main(event, context) {
@@ -42,12 +44,13 @@ exports.processAndSave = function main(event, context) {
 
   for (const record of data) {
     if (["Challenge", "Submission"].includes(record.tableName)) {
+      let pthPrefix = record.tableName === "Challenge" ? dwChallengeOutputBucketPathPrefix : dwSubmissionOutputBucketPathPrefix;
       tasks.push(
         saveToS3AsParquetPromise(
           record,
           pathPrefix,
           dwOutputBucket,
-          dwChallengeOutputBucketPathPrefix
+          pthPrefix
         )
       );
     } else {
@@ -119,6 +122,7 @@ const getPrimaryKey = (tableName) => {
       return "userId";
     case "tags":
     case "submission":
+    case "challenge":
       return "id";
     default:
       return "userId";
@@ -164,7 +168,7 @@ async function saveToS3AsParquetPromise(
       recursive: true,
     });
 
-    const filePath = `${pathPrefix}/${partitionKey}/${mappedItem.id}.parquet`;
+    const filePath = `${pathPrefix}/${partitionKey}/${mapItem[getPrimaryKey(tableName)]}.parquet`;
     const writer = await parquet.ParquetWriter.openFile(
       getSchema(tableName),
       filePath
@@ -173,8 +177,9 @@ async function saveToS3AsParquetPromise(
     await writer.close();
 
     const blob = await fs.promises.readFile(filePath);
-    const destKey = `${tableName}/${partitionKey}/${getPrimaryKey(tableName)}.parquet`;
+    const destKey = `${tableName}/${partitionKey}/${mapItem[getPrimaryKey(tableName)]}.parquet`;
 
+    console.log(`Uploading ${filePath} to s3://${dwDestBucket}/${outputBucketPathPrefix}/${destKey} for table ${tableName}`)
     const params = {
       Bucket: dwDestBucket,
       Key: `${outputBucketPathPrefix}/${destKey}`,
