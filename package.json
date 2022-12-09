@@ -5,7 +5,7 @@
   "author": "Rakib Ansary <rakibansary@gmail.com>",
   "license": "none",
   "scripts": {
-    "historical": "serverless invoke local --function historical-data --path mocks/historical-challenge.json"
+    "historical": "serverless invoke local --function historical-data --path mocks/historical-submission.json"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.165.0",
