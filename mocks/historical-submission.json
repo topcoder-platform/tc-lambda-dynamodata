@@ -1,7 +1,7 @@
 {
   "tableName": "Submission",
-  "limit": 1,
+  "limit": 3000,
   "outputBucketPathPrefix": "Submission",
-  "concurrency": 1,
-  "numRecordsToProcess": 1
+  "concurrency": 1000,
+  "numRecordsToProcess": 15000
 }
