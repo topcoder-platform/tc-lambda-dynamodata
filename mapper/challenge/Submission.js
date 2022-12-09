@@ -10,6 +10,7 @@ const mapSubmission = (submission) => {
   }
   submission.updated = +moment(submission.updated).format('x');
   submission.created = +moment(submission.created).format('x');
+  submission.submittedDate = +moment(submission.created).format('x');
   return submission;
 };
 

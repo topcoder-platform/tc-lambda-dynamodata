@@ -57,6 +57,13 @@ const mappedChallenge = (challenge) => {
   }
   challenge.updated = +moment(challenge.updated).format("x");
   challenge.created = +moment(challenge.created).format("x");
+  challenge.phases = challenge.phases.map((phase) => {
+    phase.scheduledStartDate = +moment(phase.scheduledStartDate).format("x");
+    phase.scheduledEndDate = +moment(phase.scheduledEndDate).format("x");
+    phase.actualStartDate = +moment(phase.actualStartDate).format("x");
+    phase.actualEndDate = +moment(phase.actualEndDate).format("x");
+    return phase;
+  });
 
   return challenge;
 };

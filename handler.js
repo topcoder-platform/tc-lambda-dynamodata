@@ -168,7 +168,7 @@ async function saveToS3AsParquetPromise(
       recursive: true,
     });
 
-    const filePath = `${pathPrefix}/${partitionKey}/${mapItem[getPrimaryKey(tableName)]}.parquet`;
+    const filePath = `${pathPrefix}/${partitionKey}/${mappedItem[getPrimaryKey(tableName)]}.parquet`;
     const writer = await parquet.ParquetWriter.openFile(
       getSchema(tableName),
       filePath
@@ -177,7 +177,7 @@ async function saveToS3AsParquetPromise(
     await writer.close();
 
     const blob = await fs.promises.readFile(filePath);
-    const destKey = `${tableName}/${partitionKey}/${mapItem[getPrimaryKey(tableName)]}.parquet`;
+    const destKey = `${tableName}/${partitionKey}/${mappedItem[getPrimaryKey(tableName)]}.parquet`;
 
     console.log(`Uploading ${filePath} to s3://${dwDestBucket}/${outputBucketPathPrefix}/${destKey} for table ${tableName}`)
     const params = {
