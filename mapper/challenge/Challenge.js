@@ -1,3 +1,4 @@
+const { pascalCase } = require("change-case");
 const moment = require("moment");
 
 function fixJson(obj, field) {
@@ -23,7 +24,10 @@ function fixJson(obj, field) {
     }
 
     if (field === "tags" && !Array.isArray(obj[field])) {
-      obj[field] = [obj[field]];
+      obj[field] = [`${obj[field]}`];
+    }
+    if (field === "tags" && Array.isArray(obj[field]) && obj[field][0] === null) {
+      obj[field] = []
     }
   }
 }
@@ -50,21 +54,42 @@ const mappedChallenge = (challenge) => {
   if (challenge.task != null) {
     if (challenge.task.memberId == null) {
       delete challenge.task.memberId; // bug in source system that results in null value
+    } else {
+      try {
+        challenge.task.memberId = parseInt(challenge.task.memberId);
+      } catch (e) { }
+      if (isNaN(challenge.task.memberId)) {
+        delete challenge.task.memberId; // bug in source system that results in null value
+      }
     }
     if (challenge.task.isTask == null) {
       delete challenge.task.isTask; // bug in source system that results in null value
     }
   }
+  challenge.metadata = challenge.metadata ? challenge.metadata.map(item => ({
+    name: item.name,
+    value: `${item.value}`,
+  })) : []
   challenge.updated = +moment(challenge.updated).format("x");
   challenge.created = +moment(challenge.created).format("x");
   challenge.phases = challenge.phases.map((phase) => {
     phase.scheduledStartDate = +moment(phase.scheduledStartDate).format("x");
     phase.scheduledEndDate = +moment(phase.scheduledEndDate).format("x");
-    phase.actualStartDate = +moment(phase.actualStartDate).format("x");
-    phase.actualEndDate = +moment(phase.actualEndDate).format("x");
+    phase.actualStartDate = +moment(phase.actualStartDate ? phase.actualStartDate : phase.scheduledStartDate).format("x");
+    phase.actualEndDate = +moment(phase.actualEndDate ? phase.actualEndDate : phase.scheduledEndDate).format("x");
+    if (phase.duration > 2147483647) {
+      phase.duration = 2147483647;
+    }
+    if (isNaN(phase.scheduledEndDate) || isNaN(phase.scheduledStartDate)
+      || isNaN(phase.actualEndDate) || isNaN(phase.actualStartDate)) {
+      console.log(challenge)
+      throw new Error(`Invalid date for challenge ${challenge.id} phase ${phase.id}`);
+    }
     return phase;
   });
-
+  if (!challenge.name) {
+    challenge.name = ''
+  }
   return challenge;
 };
 

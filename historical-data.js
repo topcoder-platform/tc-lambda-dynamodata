@@ -128,6 +128,7 @@ exports.fetchAll = async function main(event, context) {
           return await s3Client.upload(s3Params).promise();
         } catch (err) {
           console.log("Failed to process", mappedItem.id, err);
+          console.log("mappedItem", mappedItem);
         }
       },
       { concurrency: Concurrency }
