@@ -54,6 +54,9 @@ exports.processAndSave = function main(event, context) {
         )
       );
     } else {
+      if (record.tableName === "MemberProfile") {
+        record.dynamodb = cleanMemberProfile(record.dynamodb);
+      }
       tasks.push(
         saveToS3Promise(record, dwOutputBucket, dwMemberOutputBucketPathPrefix)
       );
@@ -148,6 +151,21 @@ const getSchema = (table) => {
   }
 
   return null;
+};
+
+const cleanMemberProfile = (dynamodb) => {
+  const {
+    firstName,
+    lastName,
+    addresses,
+    email,
+    newEmail,
+    country,
+    homeCountryCode,
+    competitionCountryCode,
+    ...data
+  } = dynamodb;
+  return data;
 };
 
 async function saveToS3AsParquetPromise(
