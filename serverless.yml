@@ -14,12 +14,6 @@ provider:
       - subnet-70657058
   tracing:
     lambda: false
-
-package:
-  patterns:
-    - "!node_modules/@serverless/**"
-    - "!node_modules/decompress-tar/**"
-
   iam:
     role:
       statements:
@@ -51,6 +45,11 @@ package:
             - "cloudwatch:PutMetricData"
           Resource:
             - "*"
+package:
+  patterns:
+    - "!*.sh"
+    - "!node_modules/@serverless/**"
+    - "!node_modules/decompress-tar/**"
 
 functions:
   historical-data:
