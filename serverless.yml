@@ -15,6 +15,11 @@ provider:
   tracing:
     lambda: false
 
+package:
+  patterns:
+    - "!node_modules/@serverless/**"
+    - "!node_modules/decompress-tar/**"
+
   iam:
     role:
       statements:
